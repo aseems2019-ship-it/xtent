@@ -1,25 +1,16 @@
-interface ChatPageProps {
-  params: Promise<{
-    id: string;
-  }>;
-}
+import ConversationSidebar from "@/components/chat/ConversationSidebar";
+import ChatWindow from "@/components/chat/ChatWindow";
 
-export default async function ChatPage({
-  params,
-}: ChatPageProps) {
-  const { id } = await params;
-
+export default function ChatPage() {
   return (
-    <div className="p-8 text-white">
-      <h1 className="text-3xl font-bold text-cyan-400">
-        Conversation
-      </h1>
+    <div className="flex h-screen bg-black">
+      {/* Sidebar */}
+      <ConversationSidebar />
 
-      <p className="mt-4 text-zinc-400">
-        Conversation ID:
-      </p>
-
-      <code className="text-cyan-300">{id}</code>
+      {/* Chat Window */}
+      <div className="flex-1">
+        <ChatWindow />
+      </div>
     </div>
   );
 }

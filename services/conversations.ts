@@ -39,3 +39,27 @@ export async function getConversations() {
 
   return data;
 }
+
+export async function updateConversationTitle(
+  conversationId: string,
+  title: string
+) {
+  const { data, error } = await supabase
+    .from("conversations")
+    .update({
+      title,
+    })
+    .eq("id", conversationId)
+    .select();
+
+  console.log("Conversation ID:", conversationId);
+  console.log("New title:", title);
+  console.log("Updated row:", data);
+
+  if (error) {
+    console.error("Update failed:", error);
+    return false;
+  }
+
+  return true;
+}

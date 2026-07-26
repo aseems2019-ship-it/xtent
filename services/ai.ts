@@ -1,36 +1,46 @@
-export async function generateResponse(prompt: string) {
+import { GoogleGenAI } from "@google/genai";
+
+const apiKey = process.env.GEMINI_API_KEY;
+
+if (!apiKey) {
+  throw new Error("GEMINI_API_KEY is missing.");
+}
+
+const ai = new GoogleGenAI({
+  apiKey,
+});
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export async function generateResponse(
+  messages: ChatMessage[]
+) {
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    const contents = messages.map((message) => ({
+      role: message.role === "assistant" ? "model" : "user",
+      parts: [
+        {
+          text: message.content,
         },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: prompt,
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
+      ],
+    }));
 
-    const data = await response.json();
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents,
+    });
 
-    if (!response.ok) {
-      console.error("Gemini Error:", data);
-      return JSON.stringify(data, null, 2);
+    return response.text ?? "No response";
+  } catch (error) {
+    console.error("Gemini Error:", error);
+
+    if (error instanceof Error) {
+      return error.message;
     }
 
-    return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "No response";
-  } catch (error) {
-    console.error(error);
-    return "Request failed";
+    return "Something went wrong.";
   }
 }

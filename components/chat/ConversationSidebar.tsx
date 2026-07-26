@@ -22,6 +22,22 @@ export default function ConversationSidebar() {
 
   useEffect(() => {
     loadConversations();
+
+    function handleRefresh() {
+      loadConversations();
+    }
+
+    window.addEventListener(
+      "conversation-updated",
+      handleRefresh
+    );
+
+    return () => {
+      window.removeEventListener(
+        "conversation-updated",
+        handleRefresh
+      );
+    };
   }, []);
 
   async function loadConversations() {
@@ -39,6 +55,9 @@ export default function ConversationSidebar() {
     if (!conversation) return;
 
     await loadConversations();
+    window.dispatchEvent(
+      new Event("conversation-updated")
+    );
 
     router.push(`/chat/${conversation.id}`);
     router.refresh();
