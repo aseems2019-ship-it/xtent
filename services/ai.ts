@@ -179,7 +179,7 @@ export async function* generateResponseStream(
     // ---------------------------------------------
 
     const systemInstruction = `
-You are XtenT AI.
+You are helpS AI.
 
 You are intelligent, helpful, friendly and professional.
 
@@ -263,10 +263,10 @@ Rules:
       lastError
     );
 
-    yield "❌ XtenT AI is temporarily unavailable. Please try again in a moment.";
+    yield "❌ helpS AI is temporarily unavailable. Please try again in a moment.";
   } catch (error: any) {
     console.error(
-      "XtenT AI error:",
+      "helpS AI error:",
       error
     );
 

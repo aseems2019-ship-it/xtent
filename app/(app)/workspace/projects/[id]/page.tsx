@@ -219,7 +219,7 @@ export default function ProjectDetailPage() {
           </h2>
 
           <p className="mt-2 max-w-2xl leading-7 text-gray-400">
-            This is the foundation for the full XtenT project
+            This is the foundation for the full helpS project
             workspace. We will add AI conversations, notes,
             files, and other project tools here step by step.
           </p>

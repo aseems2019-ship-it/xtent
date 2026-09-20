@@ -359,7 +359,7 @@ export default function ProjectFilesPage() {
 
           <p className="text-sm leading-6 text-gray-400">
             Files uploaded here are stored inside this
-            project's folder in XtenT.
+            project's folder in helpS.
           </p>
 
           <p className="mt-2 text-xs text-gray-600">

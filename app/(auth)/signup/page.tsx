@@ -44,7 +44,7 @@ export default function SignupPage() {
         </h1>
 
         <p className="mb-8 text-zinc-400">
-          Join XtenT and start chatting with AI.
+          Join helpS and start chatting with AI.
         </p>
 
         <div className="space-y-4">

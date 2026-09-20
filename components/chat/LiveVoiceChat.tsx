@@ -201,7 +201,7 @@ export default function LiveVoiceChat({
       setError("");
 
       console.log(
-        "Starting XtenT Live Voice Chat..."
+        "Starting helpS Live Voice Chat..."
       );
 
       const tokenResponse =
@@ -236,7 +236,7 @@ export default function LiveVoiceChat({
           callbacks: {
             onopen: () => {
               console.log(
-                "XtenT Live connected"
+                "helpS Live connected"
               );
 
               if (
@@ -256,7 +256,7 @@ export default function LiveVoiceChat({
               event: any
             ) => {
               console.error(
-                "XtenT Live error:",
+                "helpS Live error:",
                 event
               );
 
@@ -275,7 +275,7 @@ export default function LiveVoiceChat({
               event: any
             ) => {
               console.log(
-                "XtenT Live closed:",
+                "helpS Live closed:",
                 event
               );
             },
@@ -303,7 +303,7 @@ export default function LiveVoiceChat({
             },
 
             systemInstruction: `
-You are XtenT AI.
+You are helpS AI.
 
 You are a friendly and intelligent real-time voice assistant.
 
@@ -647,7 +647,7 @@ Never mention Gemini or Google unless the user specifically asks.
     activeRef.current = false;
 
     console.log(
-      "Stopping XtenT Live Voice Chat..."
+      "Stopping helpS Live Voice Chat..."
     );
 
     try {
@@ -699,7 +699,7 @@ Never mention Gemini or Google unless the user specifically asks.
       <div className="relative w-full max-w-lg rounded-3xl border border-zinc-800 bg-zinc-950 p-8 shadow-2xl">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white">
-            XtenT Voice Chat
+            helpS Voice Chat
           </h2>
 
           <p className="mt-2 text-sm text-zinc-400">
@@ -710,7 +710,7 @@ Never mention Gemini or Google unless the user specifically asks.
               "Listening..."}
 
             {status === "speaking" &&
-              "XtenT is speaking..."}
+              "helpS is speaking..."}
 
             {status === "error" &&
               "Connection failed"}

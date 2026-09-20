@@ -18,7 +18,7 @@ const posts = [
     description:
       "Explore how AI can be used to create useful applications, automate tasks, and solve real-world problems.",
     category: "AI",
-    author: "XtenT Community",
+    author: "helpS Community",
     likes: 124,
   },
   {
@@ -27,14 +27,14 @@ const posts = [
     description:
       "Discover ideas, tools, and techniques for building modern web applications with Next.js and React.",
     category: "Technology",
-    author: "XtenT Developers",
+    author: "helpS Developers",
     likes: 98,
   },
   {
     id: 3,
     title: "Data Science Projects",
     description:
-      "Share projects, datasets, visualizations, and machine-learning ideas with the XtenT community.",
+      "Share projects, datasets, visualizations, and machine-learning ideas with the helpS community.",
     category: "Data Science",
     author: "Data Community",
     likes: 86,
@@ -45,7 +45,7 @@ const posts = [
     description:
       "Explore creative ideas for interfaces, graphics, products, and digital experiences.",
     category: "Design",
-    author: "XtenT Creators",
+    author: "helpS Creators",
     likes: 73,
   },
   {
@@ -63,7 +63,7 @@ const posts = [
     description:
       "Discuss emerging AI technologies and how they may change the way we work and create.",
     category: "AI",
-    author: "XtenT AI",
+    author: "helpS AI",
     likes: 156,
   },
 ];
@@ -93,7 +93,7 @@ export default function ExplorePage() {
         {/* Header */}
         <div className="mb-8">
           <p className="mb-2 text-sm font-medium text-cyan-400">
-            Discover XtenT
+            Discover helpS
           </p>
 
           <h1 className="text-4xl font-bold tracking-tight">
@@ -102,7 +102,7 @@ export default function ExplorePage() {
 
           <p className="mt-2 max-w-2xl text-gray-400">
             Discover ideas, projects, creators, technology, and
-            AI-powered content from the XtenT community.
+            AI-powered content from the helpS community.
           </p>
         </div>
 
@@ -146,7 +146,7 @@ export default function ExplorePage() {
             </h2>
 
             <p className="mt-2 text-gray-400">
-              XtenT brings AI, creativity, productivity, and
+              helpS brings AI, creativity, productivity, and
               community into one workspace.
             </p>
 

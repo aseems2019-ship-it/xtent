@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "XtenT",
+  title: "helpS",
   description:
     "Your AI. Your Space. The next-generation AI workspace for creativity, productivity, and collaboration.",
 };
@@ -33,3 +33,4 @@ export default function RootLayout({
     </html>
   );
 }
+

@@ -335,7 +335,7 @@ export async function POST(
       return NextResponse.json(
         {
           error:
-            "XtenT could not read any text from this scanned PDF.",
+            "helpS could not read any text from this scanned PDF.",
           scanned: true,
           method: "ocr",
         },
