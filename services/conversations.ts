@@ -1,13 +1,15 @@
 import { createClient } from "@/lib/supabase/client";
 
-const supabase = createClient();
-
 export async function createConversation() {
+  const supabase = createClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
   const { data, error } = await supabase
     .from("conversations")
@@ -19,7 +21,7 @@ export async function createConversation() {
     .single();
 
   if (error) {
-    console.error(error);
+    console.error("Create conversation:", error);
     return null;
   }
 
@@ -27,37 +29,184 @@ export async function createConversation() {
 }
 
 export async function getConversations() {
-  const { data, error } = await supabase
-    .from("conversations")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const supabase = createClient();
 
-  if (error) {
-    console.error(error);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
     return [];
   }
 
-  return data;
+  const { data, error } = await supabase
+    .from("conversations")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("pinned", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Get conversations:", error);
+    return [];
+  }
+
+  return data ?? [];
 }
 
 export async function updateConversationTitle(
   conversationId: string,
   title: string
 ) {
-  const { data, error } = await supabase
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return false;
+  }
+
+  const cleanTitle = title.trim();
+
+  if (!cleanTitle) {
+    return false;
+  }
+
+  const { error } = await supabase
     .from("conversations")
     .update({
-      title,
+      title: cleanTitle.slice(0, 100),
     })
     .eq("id", conversationId)
-    .select();
-
-  console.log("Conversation ID:", conversationId);
-  console.log("New title:", title);
-  console.log("Updated row:", data);
+    .eq("user_id", user.id);
 
   if (error) {
-    console.error("Update failed:", error);
+    console.error("Update conversation title:", error);
+    return false;
+  }
+
+  return true;
+}
+
+export async function deleteConversation(
+  conversationId: string
+) {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return false;
+  }
+
+  const { error } = await supabase
+    .from("conversations")
+    .delete()
+    .eq("id", conversationId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Delete conversation:", error);
+    return false;
+  }
+
+  return true;
+}
+
+export async function renameConversation(
+  conversationId: string,
+  title: string
+) {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return false;
+  }
+
+  const cleanTitle = title.trim();
+
+  if (!cleanTitle) {
+    return false;
+  }
+
+  const { error } = await supabase
+    .from("conversations")
+    .update({
+      title: cleanTitle.slice(0, 100),
+    })
+    .eq("id", conversationId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Rename conversation:", error);
+    return false;
+  }
+
+  return true;
+}
+
+export async function togglePinConversation(
+  conversationId: string,
+  pinned: boolean
+) {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return false;
+  }
+
+  const { error } = await supabase
+    .from("conversations")
+    .update({
+      pinned: !pinned,
+    })
+    .eq("id", conversationId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Pin conversation:", error);
+    return false;
+  }
+
+  return true;
+}
+
+export async function moveConversationToFolder(
+  conversationId: string,
+  folderId: string | null
+) {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return false;
+  }
+
+  const { error } = await supabase
+    .from("conversations")
+    .update({
+      folder_id: folderId,
+    })
+    .eq("id", conversationId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Move conversation:", error);
     return false;
   }
 

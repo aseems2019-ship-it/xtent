@@ -39,3 +39,33 @@ export async function getMessages(conversationId: string) {
 
   return data;
 }
+export async function deleteMessagesAfter(
+  conversationId: string,
+  messageIndex: number
+) {
+  const { data, error } = await supabase
+    .from("messages")
+    .select("id")
+    .eq("conversation_id", conversationId)
+    .order("created_at", { ascending: true });
+
+  if (error || !data) return false;
+
+  const idsToDelete = data
+    .slice(messageIndex + 1)
+    .map((m) => m.id);
+
+  if (idsToDelete.length === 0) return true;
+
+  const { error: deleteError } = await supabase
+    .from("messages")
+    .delete()
+    .in("id", idsToDelete);
+
+  if (deleteError) {
+    console.error(deleteError);
+    return false;
+  }
+
+  return true;
+}

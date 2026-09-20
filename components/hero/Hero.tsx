@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
+import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative flex min-h-[calc(100vh-64px)] items-center justify-center overflow-hidden px-6">      <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+    <section className="relative flex min-h-[calc(100vh-64px)] items-center justify-center overflow-hidden px-6">
+      <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,#2563eb22,transparent_60%)]" />
+
         <div className="mb-6 flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-2 text-cyan-400">
           <Sparkles className="h-4 w-4" />
           <span>Welcome to XtenT</span>
@@ -22,13 +25,17 @@ export default function Hero() {
         </p>
 
         <div className="flex gap-4">
-          <Button size="lg">
-            Get Started
-          </Button>
+          <Link href="/chat">
+            <Button size="lg">
+              Get Started
+            </Button>
+          </Link>
 
-          <Button variant="outline" size="lg">
-            Learn More
-          </Button>
+          <Link href="/about">
+            <Button variant="outline" size="lg">
+              Learn More
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

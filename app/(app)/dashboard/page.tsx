@@ -13,17 +13,19 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold">
-        Welcome to XtenT 🚀
-      </h1>
+    <div className="flex min-h-full items-center justify-center bg-black p-8">
+      <div className="w-full max-w-2xl">
+        <h1 className="text-3xl font-bold text-white">
+          Welcome to XtenT 🚀
+        </h1>
 
-      <p className="mt-6 text-lg">
-        Logged in as:
-      </p>
+        <p className="mt-6 text-lg text-zinc-400">
+          Welcome back,
+        </p>
 
-      <div className="mt-2 rounded-lg bg-zinc-900 p-4 text-cyan-400">
-        {user.email}
+        <div className="mt-2 rounded-lg border border-zinc-800 bg-zinc-900 p-4 text-cyan-400">
+          aseemsall007
+        </div>
       </div>
     </div>
   );

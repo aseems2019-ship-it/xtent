@@ -1,56 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import type { User } from "@supabase/supabase-js";
+import { LogOut } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Topbar() {
-  const supabase = createClient();
   const router = useRouter();
-
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    async function loadUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      setUser(user);
-    }
-
-    loadUser();
-  }, [supabase]);
+  const supabase = createClient();
 
   async function handleLogout() {
     await supabase.auth.signOut();
+
     router.push("/login");
     router.refresh();
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-6 py-4">
-      <h1 className="text-xl font-bold text-white">
-        XtenT
-      </h1>
-
-      <div className="flex items-center gap-4">
-        <div className="text-right">
-          <p className="text-sm text-zinc-400">
-            Signed in as
-          </p>
-
-          <p className="font-medium text-cyan-400">
-            {user?.email}
-          </p>
+    <header className="flex h-11 shrink-0 items-center justify-end border-b border-zinc-800 bg-black px-4">
+      <div className="flex items-center gap-2">
+        {/* User Avatar */}
+        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-500 text-xs font-bold text-black">
+          A
         </div>
 
+        {/* User Name */}
+        <span className="text-xs font-medium text-zinc-300">
+          aseemsall007
+        </span>
+
+        {/* Online Indicator */}
+        <span
+          className="h-1.5 w-1.5 rounded-full bg-emerald-400"
+          title="Online"
+        />
+
+        {/* Logout */}
         <button
           onClick={handleLogout}
-          className="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-600"
+          title="Logout"
+          className="ml-1 rounded-md p-1.5 text-zinc-500 transition hover:bg-zinc-800 hover:text-white"
         >
-          Logout
+          <LogOut size={14} />
         </button>
       </div>
     </header>

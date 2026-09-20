@@ -1,71 +1,90 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
-export default function SignUpPage() {
+export default function SignupPage() {
   const supabase = createClient();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function handleSignUp(e: React.FormEvent) {
+  async function signup(e: React.FormEvent) {
     e.preventDefault();
+
+    setLoading(true);
 
     const { error } = await supabase.auth.signUp({
       email,
       password,
     });
 
+    setLoading(false);
+
     if (error) {
-      setMessage(error.message);
-    } else {
-      setMessage("✅ Check your email to confirm your account.");
+      alert(error.message);
+      return;
     }
+
+    alert("Account created successfully!");
+
+    window.location.href = "/login";
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black">
+    <main className="flex min-h-screen items-center justify-center bg-black px-6">
       <form
-        onSubmit={handleSignUp}
-        className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-8"
+        onSubmit={signup}
+        className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl"
       >
-        <h1 className="mb-6 text-3xl font-bold text-white">
-          Create your XtenT account
+        <h1 className="mb-2 text-3xl font-bold text-white">
+          Create Account
         </h1>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="mb-4 w-full rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-white"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <p className="mb-8 text-zinc-400">
+          Join XtenT and start chatting with AI.
+        </p>
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="mb-4 w-full rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-white"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="space-y-4">
+          <input
+            type="email"
+            required
+            placeholder="Email"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white outline-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <button
-          type="submit"
-          className="w-full rounded-lg bg-cyan-500 p-3 font-semibold text-black"
-        >
-          Sign Up
-        </button>
+          <input
+            type="password"
+            required
+            placeholder="Password"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white outline-none"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        {message && (
-          <p className="mt-4 text-center text-sm text-white">
-            {message}
-          </p>
-        )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-lg bg-cyan-500 py-3 font-semibold text-black transition hover:bg-cyan-400 disabled:opacity-50"
+          >
+            {loading ? "Creating Account..." : "Create Account"}
+          </button>
+        </div>
+
+        <p className="mt-6 text-center text-zinc-400">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-cyan-400 hover:underline"
+          >
+            Sign In
+          </Link>
+        </p>
       </form>
-    </div>
+    </main>
   );
 }

@@ -1,24 +1,29 @@
+import { redirect } from "next/navigation";
 import Sidebar from "@/components/dashboard/Sidebar";
-import Topbar from "@/components/dashboard/Topbar";
+import { createClient } from "@/lib/supabase/server";
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white">
-      <div className="flex min-h-screen">
-        <Sidebar />
+    <div className="flex min-h-screen">
+      <Sidebar />
 
-        <div className="flex flex-1 flex-col">
-          <Topbar />
-
-          <section className="flex-1 p-8">
-            {children}
-          </section>
-        </div>
+      <div className="flex-1 min-w-0">
+        {children}
       </div>
-    </main>
+    </div>
   );
 }

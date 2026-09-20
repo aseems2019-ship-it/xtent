@@ -1,74 +1,88 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const supabase = createClient();
-  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function handleLogin(e: React.FormEvent) {
+  async function login(e: React.FormEvent) {
     e.preventDefault();
+
+    setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
+    setLoading(false);
+
     if (error) {
-      setMessage(error.message);
+      alert(error.message);
       return;
     }
 
-    router.push("/dashboard");
+    window.location.href = "/chat";
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black">
+    <main className="flex min-h-screen items-center justify-center bg-black px-6">
       <form
-        onSubmit={handleLogin}
-        className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-8"
+        onSubmit={login}
+        className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl"
       >
-        <h1 className="mb-6 text-3xl font-bold text-white">
-          Welcome back
+        <h1 className="mb-2 text-3xl font-bold text-white">
+          Welcome Back
         </h1>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="mb-4 w-full rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-white"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <p className="mb-8 text-zinc-400">
+          Sign in to continue using XtenT.
+        </p>
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="mb-4 w-full rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-white"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="space-y-4">
+          <input
+            type="email"
+            required
+            placeholder="Email"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white outline-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <button
-          type="submit"
-          className="w-full rounded-lg bg-cyan-500 p-3 font-semibold text-black"
-        >
-          Sign In
-        </button>
+          <input
+            type="password"
+            required
+            placeholder="Password"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white outline-none"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        {message && (
-          <p className="mt-4 text-center text-sm text-white">
-            {message}
-          </p>
-        )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-lg bg-cyan-500 py-3 font-semibold text-black transition hover:bg-cyan-400 disabled:opacity-50"
+          >
+            {loading ? "Signing In..." : "Sign In"}
+          </button>
+        </div>
+
+        <p className="mt-6 text-center text-zinc-400">
+          Don't have an account?{" "}
+          <Link
+            href="/signup"
+            className="font-medium text-cyan-400 hover:underline"
+          >
+            Sign Up
+          </Link>
+        </p>
       </form>
-    </div>
+    </main>
   );
 }
