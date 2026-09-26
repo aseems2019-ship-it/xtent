@@ -7,7 +7,7 @@ export default function Logo() {
 
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-white">
-          helpS
+          xtent
         </h1>
 
         <p className="text-sm text-gray-400">

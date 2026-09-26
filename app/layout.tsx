@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "helpS",
+  title: "xtent",
   description:
     "Your AI. Your Space. The next-generation AI workspace for creativity, productivity, and collaboration.",
 };

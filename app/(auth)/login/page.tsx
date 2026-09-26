@@ -42,7 +42,7 @@ export default function LoginPage() {
         </h1>
 
         <p className="mb-8 text-zinc-400">
-          Sign in to continue using helpS.
+          Sign in to continue using xtent.
         </p>
 
         <div className="space-y-4">

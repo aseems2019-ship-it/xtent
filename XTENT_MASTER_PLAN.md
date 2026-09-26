@@ -1,8 +1,8 @@
-# 🚀 helpS Master Plan
+# 🚀 xtent Master Plan
 
 ## Vision
 
-helpS is an AI-first platform that combines Artificial Intelligence, Productivity, Knowledge Management, and Social Networking into one seamless experience.
+xtent is an AI-first platform that combines Artificial Intelligence, Productivity, Knowledge Management, and Social Networking into one seamless experience.
 
 Our goal is not to copy ChatGPT or Claude, but to build an intelligent platform where AI helps users create, learn, work, and connect.
 
@@ -146,7 +146,7 @@ Deployment
 
 # Design Language
 
-Brand: helpS
+Brand: xtent
 
 Tagline: Your AI. Your Space.
 

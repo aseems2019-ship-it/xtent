@@ -30,10 +30,10 @@ export default function Sidebar() {
 
   return (
     <aside className="relative flex h-screen w-[58px] shrink-0 flex-col items-center border-r border-zinc-800 bg-[#0b0b0d] text-white">
-      {/* helpS Logo */}
+      {/* xtent Logo */}
       <Link
         href="/chat"
-        title="helpS"
+        title="xtent"
         className="flex h-[58px] w-full items-center justify-center border-b border-zinc-800"
       >
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500 text-sm font-bold text-black">

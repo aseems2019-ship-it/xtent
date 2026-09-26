@@ -10,7 +10,7 @@ export default function Hero() {
 
         <div className="mb-6 flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-2 text-cyan-400">
           <Sparkles className="h-4 w-4" />
-          <span>Welcome to helpS</span>
+          <span>Welcome to xtent</span>
         </div>
 
         <h1 className="mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-5xl font-extrabold leading-tight text-transparent md:text-7xl">

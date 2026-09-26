@@ -114,7 +114,7 @@ export default function WorkspacePage() {
         name: newProjectName.trim(),
         description:
           newProjectDescription.trim() ||
-          "A new helpS workspace project.",
+          "A new xtent workspace project.",
         type: "Development",
       })
       .select()
@@ -214,7 +214,7 @@ export default function WorkspacePage() {
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <p className="mb-2 text-sm font-medium text-cyan-400">
-              helpS Workspace
+              xtent Workspace
             </p>
 
             <h1 className="text-4xl font-bold tracking-tight">
@@ -319,13 +319,13 @@ export default function WorkspacePage() {
             </span>
 
             <h2 className="mt-4 text-2xl font-bold">
-              Build anything with helpS.
+              Build anything with xtent.
             </h2>
 
             <p className="mt-2 text-gray-400">
               Create projects, experiment with ideas, and keep
               your work organized. More workspace tools will be
-              added as helpS grows.
+              added as xtent grows.
             </p>
 
           </div>

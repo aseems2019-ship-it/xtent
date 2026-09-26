@@ -98,7 +98,7 @@ export default function CommunitiesPage() {
         {/* Header */}
         <div className="mb-8">
           <p className="mb-2 text-sm font-medium text-cyan-400">
-            helpS Community
+            xtent Community
           </p>
 
           <h1 className="text-4xl font-bold tracking-tight">
@@ -152,7 +152,7 @@ export default function CommunitiesPage() {
               </h2>
 
               <p className="mt-2 max-w-2xl text-gray-400">
-                helpS communities are spaces where people can
+                xtent communities are spaces where people can
                 learn, discuss ideas, and build projects together.
               </p>
             </div>

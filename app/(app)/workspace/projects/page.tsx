@@ -105,7 +105,7 @@ export default function ProjectsPage() {
         name: newProjectName.trim(),
         description:
           newProjectDescription.trim() ||
-          "A new helpS project.",
+          "A new xtent project.",
         type: "Development",
       })
       .select()
@@ -204,7 +204,7 @@ export default function ProjectsPage() {
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <p className="mb-2 text-sm font-medium text-cyan-400">
-              helpS Workspace
+              xtent Workspace
             </p>
 
             <h1 className="text-4xl font-bold tracking-tight">
@@ -212,7 +212,7 @@ export default function ProjectsPage() {
             </h1>
 
             <p className="mt-2 max-w-2xl text-gray-400">
-              Manage and organize all your helpS projects
+              Manage and organize all your xtent projects
               from one place.
             </p>
           </div>
@@ -421,7 +421,7 @@ export default function ProjectsPage() {
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    Create a new helpS project.
+                    Create a new xtent project.
                   </p>
                 </div>
 

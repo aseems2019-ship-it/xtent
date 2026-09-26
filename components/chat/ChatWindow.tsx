@@ -39,7 +39,7 @@ export default function ChatWindow() {
     {
       role: "assistant",
       content:
-        "👋 **Welcome to helpS**\n\nHow can I help you today?",
+        "👋 **Welcome to xtent**\n\nHow can I help you today?",
     },
   ]);
 
@@ -133,7 +133,7 @@ export default function ChatWindow() {
             {
               role: "assistant",
               content:
-                "👋 Hello! I'm **helpS AI**. How can I help you today?",
+                "👋 Hello! I'm **xtent AI**. How can I help you today?",
             },
           ]);
         }
@@ -525,7 +525,7 @@ export default function ChatWindow() {
               <div className="mb-8 text-center">
 
                 <h1 className="text-3xl font-semibold tracking-tight text-white">
-                  Welcome to helpS
+                  Welcome to xtent
                 </h1>
 
                 <p className="mt-3 text-base text-zinc-500">
@@ -650,7 +650,7 @@ export default function ChatWindow() {
 
               {/* Footer */}
               <div className="mt-5 text-center text-xs text-zinc-700">
-                helpS can make mistakes. Check important information.
+                xtent can make mistakes. Check important information.
               </div>
 
             </div>

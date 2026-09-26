@@ -54,7 +54,7 @@ export async function POST(req: Request) {
         headers: {
           "Content-Type": "application/pdf",
           "Content-Disposition":
-            'attachment; filename="helpS-document.pdf"',
+            'attachment; filename="xtent-document.pdf"',
         },
       });
     }
@@ -179,7 +179,7 @@ export async function POST(req: Request) {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition":
-          'attachment; filename="helpS-document.pdf"',
+          'attachment; filename="xtent-document.pdf"',
       },
     });
   } catch (error) {

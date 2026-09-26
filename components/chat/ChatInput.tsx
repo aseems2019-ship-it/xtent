@@ -345,7 +345,7 @@ export default function ChatInput({
 
       link.href = url;
       link.download =
-        "helpS-document.pdf";
+        "xtent-document.pdf";
 
       document.body.appendChild(link);
 
@@ -474,7 +474,7 @@ export default function ChatInput({
               maxLength={10000}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
-              placeholder="Message helpS..."
+              placeholder="Message xtent..."
               className="max-h-52 min-h-[24px] flex-1 resize-none overflow-y-auto bg-transparent px-2 py-2 text-white outline-none placeholder:text-zinc-500"
             />
 

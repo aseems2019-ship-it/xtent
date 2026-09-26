@@ -9,11 +9,11 @@ export default function CreatePage() {
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-3xl font-semibold">
-            Create with helpS
+            Create with xtent
           </h1>
 
           <p className="mt-2 text-zinc-400">
-            Work with images and documents using helpS.
+            Work with images and documents using xtent.
           </p>
         </div>
 
@@ -30,7 +30,7 @@ export default function CreatePage() {
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-zinc-400">
-                Upload an image in chat and ask helpS to
+                Upload an image in chat and ask xtent to
                 understand, analyze, describe, or answer
                 questions about it.
               </p>

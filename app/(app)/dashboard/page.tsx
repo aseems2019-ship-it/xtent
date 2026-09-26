@@ -16,7 +16,7 @@ export default async function DashboardPage() {
     <div className="flex min-h-full items-center justify-center bg-black p-8">
       <div className="w-full max-w-2xl">
         <h1 className="text-3xl font-bold text-white">
-          Welcome to helpS 🚀
+          Welcome to xtent 🚀
         </h1>
 
         <p className="mt-6 text-lg text-zinc-400">
