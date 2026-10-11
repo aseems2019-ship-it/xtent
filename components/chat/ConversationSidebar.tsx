@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 
 import {
-  createConversation,
   getConversations,
   deleteConversation,
   renameConversation,
@@ -177,34 +176,6 @@ export default function ConversationSidebar() {
         !chat.pinned &&
         chat.folder_id === null
     );
-
-  // =====================================================
-  // NEW CHAT
-  // =====================================================
-
-  async function handleNewChat() {
-    const conversation =
-      await createConversation();
-
-    if (!conversation) {
-      console.error(
-        "Unable to create conversation."
-      );
-      return;
-    }
-
-    await loadConversations();
-
-    window.dispatchEvent(
-      new Event("conversation-updated")
-    );
-
-    router.push(
-      `/chat/${conversation.id}`
-    );
-
-    router.refresh();
-  }
 
   // =====================================================
   // DELETE CHAT
@@ -616,7 +587,8 @@ export default function ConversationSidebar() {
         className="
           flex
           h-full
-          w-[250px]
+          w-full
+          md:w-[250px]
           shrink-0
           flex-col
           border-r
@@ -664,31 +636,6 @@ export default function ConversationSidebar() {
               Your conversations
             </p>
           </div>
-
-          {/* New Chat */}
-          <button
-            onClick={handleNewChat}
-            title="New Chat"
-            className="
-              flex
-              h-8
-              w-8
-              shrink-0
-              items-center
-              justify-center
-              rounded-lg
-              bg-cyan-500
-              text-black
-              transition
-              hover:bg-cyan-400
-              active:scale-95
-            "
-          >
-            <Plus
-              size={17}
-              strokeWidth={2.2}
-            />
-          </button>
         </div>
 
         {/* =================================================
