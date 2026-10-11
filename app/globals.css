@@ -149,3 +149,62 @@ body {
     @apply font-sans;
   }
 }
+
+
+/* xtent: Mobile responsive improvements */
+
+html {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  width: 100%;
+  min-width: 0;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+img,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+input,
+textarea,
+select,
+button {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  html,
+  body {
+    width: 100%;
+    min-width: 0;
+  }
+
+  main,
+  section,
+  aside,
+  nav {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  img,
+  video,
+  iframe {
+    height: auto;
+  }
+}

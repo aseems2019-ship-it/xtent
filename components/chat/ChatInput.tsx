@@ -1,11 +1,7 @@
+
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-
+import { useEffect, useRef, useState } from "react";
 import {
   Send,
   ImagePlus,
@@ -23,9 +19,7 @@ interface ChatInputProps {
     message: string,
     attachment?: File
   ) => Promise<void>;
-
   loading: boolean;
-
   initialMessage?: string;
 }
 
@@ -34,39 +28,17 @@ export default function ChatInput({
   loading,
   initialMessage = "",
 }: ChatInputProps) {
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [preview, setPreview] = useState("");
+  const [showLiveVoice, setShowLiveVoice] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(true);
+  const [convertingPdf, setConvertingPdf] = useState(false);
 
-  const [attachment, setAttachment] =
-    useState<File | null>(null);
-
-  const [preview, setPreview] =
-    useState("");
-
-  const [showLiveVoice, setShowLiveVoice] =
-    useState(false);
-
-  const [listening, setListening] =
-    useState(false);
-
-  const [speechSupported, setSpeechSupported] =
-    useState(true);
-
-  const [convertingPdf, setConvertingPdf] =
-    useState(false);
-
-  const recognitionRef =
-    useRef<any>(null);
-
-  const textareaRef =
-    useRef<HTMLTextAreaElement | null>(
-      null
-    );
-
-  const fileInputRef =
-    useRef<HTMLInputElement | null>(
-      null
-    );
+  const recognitionRef = useRef<any>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setMessage(initialMessage);
@@ -91,10 +63,7 @@ export default function ChatInput({
   }, [preview]);
 
   async function handleSubmit() {
-    if (
-      (!message.trim() && !attachment) ||
-      loading
-    ) {
+    if ((!message.trim() && !attachment) || loading) {
       return;
     }
 
@@ -102,18 +71,18 @@ export default function ChatInput({
       stopListening();
     }
 
-    await onSend(
-      message.trim(),
-      attachment ?? undefined
-    );
+    try {
+      await onSend(message.trim(), attachment ?? undefined);
 
-    setMessage("");
-    setAttachment(null);
-    setPreview("");
+      setMessage("");
+      setAttachment(null);
+      setPreview("");
 
-    if (textareaRef.current) {
-      textareaRef.current.style.height =
-        "24px";
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "48px";
+      }
+    } catch (error) {
+      console.error("Unable to send message:", error);
     }
   }
 
@@ -123,14 +92,11 @@ export default function ChatInput({
     }
 
     setAttachment(file);
-
-    if (file.type.startsWith("image/")) {
-      setPreview(
-        URL.createObjectURL(file)
-      );
-    } else {
-      setPreview("");
-    }
+    setPreview(
+      file.type.startsWith("image/")
+        ? URL.createObjectURL(file)
+        : ""
+    );
   }
 
   function removeAttachment() {
@@ -148,10 +114,9 @@ export default function ChatInput({
     setMessage(e.target.value);
 
     const textarea = e.target;
-
-    textarea.style.height = "24px";
+    textarea.style.height = "48px";
     textarea.style.height =
-      textarea.scrollHeight + "px";
+      Math.min(textarea.scrollHeight, 208) + "px";
   }
 
   async function handleKeyDown(
@@ -159,20 +124,17 @@ export default function ChatInput({
   ) {
     if (
       e.key === "Enter" &&
-      !e.shiftKey
+      !e.shiftKey &&
+      !e.nativeEvent.isComposing
     ) {
       e.preventDefault();
-
       await handleSubmit();
     }
   }
 
   function startListening() {
     if (!speechSupported) {
-      alert(
-        "Voice input is not supported by this browser."
-      );
-
+      alert("Voice input is not supported by this browser.");
       return;
     }
 
@@ -192,22 +154,15 @@ export default function ChatInput({
       recognitionRef.current = null;
     }
 
-    const recognition =
-      new SpeechRecognition();
+    const recognition = new SpeechRecognition();
 
     recognition.continuous = true;
     recognition.interimResults = true;
+    recognition.lang = navigator.language || "en-IN";
 
-    recognition.lang =
-      navigator.language || "en-IN";
+    recognition.onstart = () => setListening(true);
 
-    recognition.onstart = () => {
-      setListening(true);
-    };
-
-    recognition.onresult = (
-      event: any
-    ) => {
+    recognition.onresult = (event: any) => {
       let finalText = "";
 
       for (
@@ -215,35 +170,20 @@ export default function ChatInput({
         i < event.results.length;
         i++
       ) {
-        const transcript =
-          event.results[i][0]
-            .transcript;
-
-        if (
-          event.results[i].isFinal
-        ) {
-          finalText += transcript;
+        if (event.results[i].isFinal) {
+          finalText += event.results[i][0].transcript;
         }
       }
 
       if (finalText) {
-        setMessage(
-          (previous) =>
-            previous +
-            (previous ? " " : "") +
-            finalText
+        setMessage((previous) =>
+          previous + (previous ? " " : "") + finalText
         );
       }
     };
 
-    recognition.onerror = (
-      event: any
-    ) => {
-      console.error(
-        "Speech recognition error:",
-        event.error
-      );
-
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
       setListening(false);
     };
 
@@ -252,17 +192,12 @@ export default function ChatInput({
       recognitionRef.current = null;
     };
 
-    recognitionRef.current =
-      recognition;
+    recognitionRef.current = recognition;
 
     try {
       recognition.start();
     } catch (error) {
-      console.error(
-        "Unable to start speech recognition:",
-        error
-      );
-
+      console.error("Unable to start voice input:", error);
       setListening(false);
       recognitionRef.current = null;
     }
@@ -286,19 +221,13 @@ export default function ChatInput({
   }
 
   function openLiveVoice() {
-    if (loading) {
-      return;
-    }
+    if (loading) return;
 
     if (listening) {
       stopListening();
     }
 
     setShowLiveVoice(true);
-  }
-
-  function closeLiveVoice() {
-    setShowLiveVoice(false);
   }
 
   async function convertToPdf() {
@@ -310,56 +239,31 @@ export default function ChatInput({
       setConvertingPdf(true);
 
       const formData = new FormData();
+      formData.append("file", attachment);
 
-      formData.append(
-        "file",
-        attachment
-      );
-
-      const response = await fetch(
-        "/api/pdf",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const response = await fetch("/api/pdf", {
+        method: "POST",
+        body: formData,
+      });
 
       if (!response.ok) {
-        const errorText =
-          await response.text();
-
-        throw new Error(
-          errorText ||
-            "Failed to generate PDF."
-        );
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to generate PDF.");
       }
 
-      const blob =
-        await response.blob();
-
-      const url =
-        URL.createObjectURL(blob);
-
-      const link =
-        document.createElement("a");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
 
       link.href = url;
-      link.download =
-        "xtent-document.pdf";
-
+      link.download = "xtent-document.pdf";
       document.body.appendChild(link);
-
       link.click();
-
       link.remove();
 
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error(
-        "PDF conversion failed:",
-        error
-      );
-
+      console.error("PDF conversion failed:", error);
       alert(
         error instanceof Error
           ? error.message
@@ -372,28 +276,19 @@ export default function ChatInput({
 
   return (
     <>
-      <DropZone
-        onFileDrop={handleAttachment}
-      >
-        <div className="border-t border-zinc-800 bg-zinc-950 p-4">
-
-          {/* ATTACHMENT PREVIEW */}
-
+      <DropZone onFileDrop={handleAttachment}>
+        <div className="w-full border-t border-zinc-800 bg-zinc-950 p-2 sm:p-4">
+          {/* Attachment preview */}
           {attachment && (
-            <div className="mx-auto mb-4 max-w-4xl">
-
+            <div className="mx-auto mb-3 w-full max-w-4xl">
               {preview ? (
                 <ImagePreview
                   image={preview}
-                  onRemove={
-                    removeAttachment
-                  }
+                  onRemove={removeAttachment}
                 />
               ) : (
-                <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3">
-
+                <div className="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-zinc-800 bg-zinc-900 p-3">
                   <div className="flex min-w-0 items-center gap-3">
-
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800">
                       <FileDown
                         size={20}
@@ -405,23 +300,16 @@ export default function ChatInput({
                       <p className="truncate text-sm text-white">
                         {attachment.name}
                       </p>
-
                       <p className="text-xs text-zinc-500">
-                        {(
-                          attachment.size /
-                          1024
-                        ).toFixed(1)}{" "}
-                        KB
+                        {(attachment.size / 1024).toFixed(1)} KB
                       </p>
                     </div>
                   </div>
 
                   <button
                     type="button"
-                    onClick={
-                      removeAttachment
-                    }
-                    className="ml-3 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                    onClick={removeAttachment}
+                    className="shrink-0 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white"
                   >
                     Remove
                   </button>
@@ -430,43 +318,8 @@ export default function ChatInput({
             </div>
           )}
 
-          {/* INPUT BAR */}
-
-          <div className="mx-auto flex max-w-4xl items-end gap-2 rounded-2xl border border-zinc-800 bg-zinc-900 p-2">
-
-            {/* ATTACH FILE */}
-
-            <button
-              type="button"
-              onClick={() =>
-                fileInputRef.current?.click()
-              }
-              disabled={loading}
-              title="Attach file"
-              className="rounded-xl p-3 text-zinc-400 transition hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ImagePlus size={20} />
-            </button>
-
-            <input
-              ref={fileInputRef}
-              hidden
-              type="file"
-              accept="image/*,.pdf,.txt,.md,.docx"
-              onChange={(e) => {
-                const file =
-                  e.target.files?.[0];
-
-                if (file) {
-                  handleAttachment(file);
-                }
-
-                e.target.value = "";
-              }}
-            />
-
-            {/* TEXT INPUT */}
-
+          {/* Responsive message composer */}
+          <div className="mx-auto w-full max-w-4xl rounded-2xl border border-zinc-800 bg-zinc-900 p-2">
             <textarea
               ref={textareaRef}
               rows={1}
@@ -475,130 +328,116 @@ export default function ChatInput({
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               placeholder="Message xtent..."
-              className="max-h-52 min-h-[24px] flex-1 resize-none overflow-y-auto bg-transparent px-2 py-2 text-white outline-none placeholder:text-zinc-500"
+              aria-label="Message xtent"
+              className="block min-h-12 max-h-52 w-full min-w-0 resize-none overflow-y-auto bg-transparent px-3 py-3 text-base text-white outline-none placeholder:text-zinc-500"
             />
 
-            {/* MICROPHONE */}
+            {/* Toolbar */}
+            <div className="mt-1 flex min-w-0 items-center justify-between gap-1">
+              <div className="flex shrink-0 items-center">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading}
+                  title="Attach file"
+                  aria-label="Attach file"
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-800 hover:text-white disabled:opacity-40"
+                >
+                  <ImagePlus size={21} />
+                </button>
 
-            <button
-              type="button"
-              onClick={
-                toggleMicrophone
-              }
-              disabled={loading}
-              title={
-                listening
-                  ? "Stop voice input"
-                  : "Voice input"
-              }
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
-                listening
-                  ? "bg-red-500 text-white"
-                  : "text-zinc-300 hover:bg-zinc-800 hover:text-white"
-              }`}
-            >
-              <Mic
-                size={22}
-                className={
-                  listening
-                    ? "animate-pulse"
-                    : ""
-                }
-              />
-            </button>
+                <input
+                  ref={fileInputRef}
+                  hidden
+                  type="file"
+                  accept="image/*,.pdf,.txt,.md,.docx"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
 
-            {/* LIVE VOICE */}
+                    if (file) {
+                      handleAttachment(file);
+                    }
 
-            <button
-              type="button"
-              onClick={
-                openLiveVoice
-              }
-              disabled={loading}
-              title="Start live voice chat"
-              aria-label="Start live voice chat"
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-black shadow-lg transition hover:scale-105 hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <AudioLines
-                size={24}
-              />
-            </button>
-
-            {/* CONVERT TO PDF */}
-
-            {attachment && (
-              <button
-                type="button"
-                onClick={
-                  convertToPdf
-                }
-                disabled={
-                  loading ||
-                  convertingPdf
-                }
-                title={
-                  convertingPdf
-                    ? "Generating PDF..."
-                    : "Convert attachment to PDF"
-                }
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-zinc-300 transition hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <FileDown
-                  size={20}
-                  className={
-                    convertingPdf
-                      ? "animate-pulse"
-                      : ""
-                  }
+                    e.target.value = "";
+                  }}
                 />
-              </button>
-            )}
+              </div>
 
-            {/* SEND */}
+              <div className="flex shrink-0 items-center gap-1">
+                <button
+                  type="button"
+                  onClick={toggleMicrophone}
+                  disabled={loading || !speechSupported}
+                  title={listening ? "Stop voice input" : "Voice input"}
+                  aria-label={listening ? "Stop voice input" : "Voice input"}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full transition disabled:opacity-40 ${
+                    listening
+                      ? "bg-red-500 text-white"
+                      : "text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                  }`}
+                >
+                  <Mic
+                    size={20}
+                    className={listening ? "animate-pulse" : ""}
+                  />
+                </button>
 
-            <button
-              type="button"
-              onClick={
-                handleSubmit
-              }
-              disabled={
-                loading ||
-                (!message.trim() &&
-                  !attachment)
-              }
-              title="Send message"
-              className="rounded-xl bg-cyan-500 p-3 text-black transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <Send size={18} />
-            </button>
+                <button
+                  type="button"
+                  onClick={openLiveVoice}
+                  disabled={loading}
+                  title="Start live voice chat"
+                  aria-label="Start live voice chat"
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-300 transition hover:bg-zinc-800 hover:text-white disabled:opacity-40"
+                >
+                  <AudioLines size={21} />
+                </button>
+
+                {attachment && (
+                  <button
+                    type="button"
+                    onClick={convertToPdf}
+                    disabled={loading || convertingPdf}
+                    title={
+                      convertingPdf
+                        ? "Generating PDF..."
+                        : "Convert attachment to PDF"
+                    }
+                    aria-label="Convert attachment to PDF"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-300 transition hover:bg-zinc-800 hover:text-white disabled:opacity-40"
+                  >
+                    <FileDown
+                      size={20}
+                      className={convertingPdf ? "animate-pulse" : ""}
+                    />
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading || (!message.trim() && !attachment)}
+                  title="Send message"
+                  aria-label="Send message"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-500 text-black transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <Send size={18} />
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* FOOTER */}
-
-          <div className="mt-2 flex justify-between px-2 text-xs text-zinc-500">
-
-            <span>
-              Enter to send • Shift +
-              Enter for new line
-            </span>
-
-            <span>
-              {message.length}/10000
-            </span>
+          {/* Footer */}
+          <div className="mx-auto mt-2 flex w-full max-w-4xl justify-between gap-2 px-2 text-[10px] text-zinc-500 sm:text-xs">
+            <span>Enter to send · Shift + Enter for new line</span>
+            <span className="shrink-0">{message.length}/10000</span>
           </div>
         </div>
       </DropZone>
 
-      {/* LIVE VOICE */}
-
       {showLiveVoice && (
-        <LiveVoiceChat
-          onClose={
-            closeLiveVoice
-          }
-        />
+        <LiveVoiceChat onClose={() => setShowLiveVoice(false)} />
       )}
     </>
   );
 }
-

@@ -1,0 +1,21 @@
+﻿
+{
+  "id": "/",
+  "name": "xtent",
+  "short_name": "xtent",
+  "description": "Your AI. Your Space.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#151a24",
+  "theme_color": "#151a24",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/xtent-logo.png",
+      "sizes": "240x240",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
