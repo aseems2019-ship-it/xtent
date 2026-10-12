@@ -80,7 +80,7 @@ export default function ChatWindow() {
   // Keep the latest messages visible inside the message area.
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
-      behavior: "smooth",
+      behavior: "auto",
       block: "end",
     });
   }, [messages, loading]);
@@ -417,7 +417,7 @@ export default function ChatWindow() {
     <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-black">
       {/* Scrollable content area */}
       <div
-        className={`min-h-0 flex-1 overflow-y-auto overscroll-contain ${
+        className={`min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y ${
           isFreshChat ? "px-4 py-6 sm:px-6" : "px-4 py-6 sm:px-6 sm:py-8"
         }`}
       >

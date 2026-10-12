@@ -18,10 +18,10 @@ export default async function AppLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-dvh min-h-0 overflow-hidden">
       <Sidebar />
 
-      <div className="flex-1 min-w-0">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         {children}
       </div>
     </div>
