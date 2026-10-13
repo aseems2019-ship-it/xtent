@@ -34,13 +34,7 @@ interface ImageData {
 }
 
 export default function ChatWindow() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "👋 **Welcome to xtent**\n\nHow can I help you today?",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [editingMessage, setEditingMessage] = useState("");
@@ -91,13 +85,7 @@ export default function ChatWindow() {
 
     async function loadMessages() {
       if (!conversationId) {
-        setMessages([
-          {
-            role: "assistant",
-            content:
-              "👋 **Welcome to xtent**\n\nHow can I help you today?",
-          },
-        ]);
+        setMessages([]);
         setLastUserMessage("");
         setEditingIndex(null);
         setEditingMessage("");
@@ -125,13 +113,7 @@ export default function ChatWindow() {
             latestUserMessage?.content ?? ""
           );
         } else {
-          setMessages([
-            {
-              role: "assistant",
-              content:
-                "👋 Hello! I'm **xtent AI**. How can I help you today?",
-            },
-          ]);
+          setMessages([]);
           setLastUserMessage("");
         }
 
@@ -409,8 +391,7 @@ export default function ChatWindow() {
 
   const isFreshChat =
     !conversationId &&
-    messages.length === 1 &&
-    messages[0].role === "assistant" &&
+    messages.length === 0 &&
     !loading;
 
   return (

@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Folder,
   MoreVertical,
+  LogOut,
 } from "lucide-react";
 
 import {
@@ -33,6 +34,7 @@ import {
 import { DndContext } from "@dnd-kit/core";
 import ChatItem from "./ChatItem";
 import FolderDropZone from "./FolderDropZone";
+import { createClient } from "@/lib/supabase/client";
 
 import {
   DropdownMenu,
@@ -57,6 +59,29 @@ interface FolderType {
 
 export default function ConversationSidebar() {
   const router = useRouter();
+  const [supabase] = useState(() => createClient());
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  async function handleLogout() {
+    if (loggingOut) return;
+
+    setLoggingOut(true);
+
+    try {
+      const { error } = await supabase.auth.signOut({ scope: "global" });
+
+      if (error) {
+        console.error("Logout failed:", error);
+        setLoggingOut(false);
+        return;
+      }
+
+      window.location.assign("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      setLoggingOut(false);
+    }
+  }
 
   const [conversations, setConversations] = useState<
     Conversation[]
@@ -1106,6 +1131,17 @@ export default function ConversationSidebar() {
 
           </section>
 
+        </div>
+        <div className="shrink-0 border-t border-zinc-800 p-3">
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <LogOut size={17} />
+            <span>{loggingOut ? "Logging out..." : "Log out"}</span>
+          </button>
         </div>
       </aside>
     </DndContext>

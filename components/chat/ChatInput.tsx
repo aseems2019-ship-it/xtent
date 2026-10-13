@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ChangeEvent, KeyboardEvent } from "react";
 import {
   Send,
   ImagePlus,
@@ -37,6 +38,7 @@ export default function ChatInput({
   const [convertingPdf, setConvertingPdf] = useState(false);
 
   const recognitionRef = useRef<any>(null);
+  const baseMessageRef = useRef("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -56,6 +58,23 @@ export default function ChatInput({
 
   useEffect(() => {
     return () => {
+      const recognition = recognitionRef.current;
+      recognitionRef.current = null;
+
+      if (recognition) {
+        recognition.onresult = null;
+        recognition.onend = null;
+        recognition.onerror = null;
+
+        try {
+          recognition.abort();
+        } catch {}
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
       if (preview) {
         URL.revokeObjectURL(preview);
       }
@@ -67,7 +86,7 @@ export default function ChatInput({
       return;
     }
 
-    if (listening) {
+    if (recognitionRef.current) {
       stopListening();
     }
 
@@ -77,6 +96,7 @@ export default function ChatInput({
       setMessage("");
       setAttachment(null);
       setPreview("");
+      baseMessageRef.current = "";
 
       if (textareaRef.current) {
         textareaRef.current.style.height = "48px";
@@ -108,9 +128,7 @@ export default function ChatInput({
     setPreview("");
   }
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) {
+  function handleChange(e: ChangeEvent<HTMLTextAreaElement>) {
     setMessage(e.target.value);
 
     const textarea = e.target;
@@ -120,7 +138,7 @@ export default function ChatInput({
   }
 
   async function handleKeyDown(
-    e: React.KeyboardEvent<HTMLTextAreaElement>
+    e: KeyboardEvent<HTMLTextAreaElement>
   ) {
     if (
       e.key === "Enter" &&
@@ -143,53 +161,95 @@ export default function ChatInput({
       window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
+      setSpeechSupported(false);
       return;
     }
 
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch {}
+    const previousRecognition = recognitionRef.current;
 
+    if (previousRecognition) {
       recognitionRef.current = null;
+      previousRecognition.onresult = null;
+      previousRecognition.onend = null;
+      previousRecognition.onerror = null;
+
+      try {
+        previousRecognition.abort();
+      } catch {}
     }
+
+    // Preserve any text already typed into the composer.
+    baseMessageRef.current = message.trim();
 
     const recognition = new SpeechRecognition();
 
     recognition.continuous = true;
+
+    // Display provisional speech before the browser finalizes it.
     recognition.interimResults = true;
     recognition.lang = navigator.language || "en-IN";
 
-    recognition.onstart = () => setListening(true);
-
-    recognition.onresult = (event: any) => {
-      let finalText = "";
-
-      for (
-        let i = event.resultIndex;
-        i < event.results.length;
-        i++
-      ) {
-        if (event.results[i].isFinal) {
-          finalText += event.results[i][0].transcript;
-        }
-      }
-
-      if (finalText) {
-        setMessage((previous) =>
-          previous + (previous ? " " : "") + finalText
-        );
+    recognition.onstart = () => {
+      if (recognitionRef.current === recognition) {
+        setListening(true);
       }
     };
 
+    recognition.onresult = (event: any) => {
+      if (recognitionRef.current !== recognition) {
+        return;
+      }
+
+      // Rebuild the spoken text from the current results list.
+      // Do not append every event: interim results can change,
+      // and appending them repeatedly can duplicate words.
+      const segments: string[] = [];
+
+      for (let i = 0; i < event.results.length; i++) {
+        const result = event.results[i];
+        const transcript = result[0]?.transcript?.trim();
+
+        if (transcript) {
+          segments.push(transcript);
+        }
+      }
+
+      const spokenText = segments.join(" ").trim();
+      const baseText = baseMessageRef.current;
+
+      const combinedText =
+        baseText && spokenText
+          ? `${baseText} ${spokenText}`
+          : baseText || spokenText;
+
+      setMessage(combinedText.slice(0, 10000));
+    };
+
     recognition.onerror = (event: any) => {
+      if (recognitionRef.current !== recognition) {
+        return;
+      }
+
       console.error("Speech recognition error:", event.error);
+
+      if (
+        event.error === "not-allowed" ||
+        event.error === "service-not-allowed"
+      ) {
+        alert(
+          "Microphone access was denied. Please allow microphone access in your browser settings."
+        );
+      }
+
+      recognitionRef.current = null;
       setListening(false);
     };
 
     recognition.onend = () => {
-      setListening(false);
-      recognitionRef.current = null;
+      if (recognitionRef.current === recognition) {
+        recognitionRef.current = null;
+        setListening(false);
+      }
     };
 
     recognitionRef.current = recognition;
@@ -198,22 +258,34 @@ export default function ChatInput({
       recognition.start();
     } catch (error) {
       console.error("Unable to start voice input:", error);
+
+      if (recognitionRef.current === recognition) {
+        recognitionRef.current = null;
+      }
+
       setListening(false);
-      recognitionRef.current = null;
     }
   }
 
   function stopListening() {
-    try {
-      recognitionRef.current?.stop();
-    } catch {}
+    const recognition = recognitionRef.current;
 
-    recognitionRef.current = null;
-    setListening(false);
+    if (!recognition) {
+      setListening(false);
+      return;
+    }
+
+    try {
+      // Let the browser finish processing pending speech.
+      recognition.stop();
+    } catch {
+      recognitionRef.current = null;
+      setListening(false);
+    }
   }
 
   function toggleMicrophone() {
-    if (listening) {
+    if (recognitionRef.current) {
       stopListening();
     } else {
       startListening();
@@ -223,7 +295,7 @@ export default function ChatInput({
   function openLiveVoice() {
     if (loading) return;
 
-    if (listening) {
+    if (recognitionRef.current) {
       stopListening();
     }
 
@@ -278,7 +350,6 @@ export default function ChatInput({
     <>
       <DropZone onFileDrop={handleAttachment}>
         <div className="w-full border-t border-zinc-800 bg-zinc-950 p-2 sm:p-4">
-          {/* Attachment preview */}
           {attachment && (
             <div className="mx-auto mb-3 w-full max-w-4xl">
               {preview ? (
@@ -318,7 +389,6 @@ export default function ChatInput({
             </div>
           )}
 
-          {/* Responsive message composer */}
           <div className="mx-auto w-full max-w-4xl rounded-2xl border border-zinc-800 bg-zinc-900 p-2">
             <textarea
               ref={textareaRef}
@@ -332,7 +402,6 @@ export default function ChatInput({
               className="block min-h-12 max-h-52 w-full min-w-0 resize-none overflow-y-auto bg-transparent px-3 py-3 text-base text-white outline-none placeholder:text-zinc-500"
             />
 
-            {/* Toolbar */}
             <div className="mt-1 flex min-w-0 items-center justify-between gap-1">
               <div className="flex shrink-0 items-center">
                 <button
@@ -369,7 +438,10 @@ export default function ChatInput({
                   onClick={toggleMicrophone}
                   disabled={loading || !speechSupported}
                   title={listening ? "Stop voice input" : "Voice input"}
-                  aria-label={listening ? "Stop voice input" : "Voice input"}
+                  aria-label={
+                    listening ? "Stop voice input" : "Voice input"
+                  }
+                  aria-pressed={listening}
                   className={`flex h-10 w-10 items-center justify-center rounded-full transition disabled:opacity-40 ${
                     listening
                       ? "bg-red-500 text-white"
@@ -427,10 +499,11 @@ export default function ChatInput({
             </div>
           </div>
 
-          {/* Footer */}
           <div className="mx-auto mt-2 flex w-full max-w-4xl justify-between gap-2 px-2 text-[10px] text-zinc-500 sm:text-xs">
             <span>Enter to send · Shift + Enter for new line</span>
-            <span className="shrink-0">{message.length}/10000</span>
+            <span className="shrink-0">
+              {message.length}/10000
+            </span>
           </div>
         </div>
       </DropZone>

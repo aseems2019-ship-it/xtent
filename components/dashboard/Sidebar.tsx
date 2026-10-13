@@ -164,6 +164,13 @@ export default function Sidebar() {
           </div>
         )}
       </div>
+      
+      {/* Copyright */}
+      <div className="shrink-0 border-t border-zinc-800 px-2 py-3 text-center">
+        <p className="text-[10px] leading-relaxed text-zinc-500">
+          © 2026 xtent · Created by Aseem S
+        </p>
+      </div>
     </aside>
   );
 }
